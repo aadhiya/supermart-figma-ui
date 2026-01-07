@@ -4,7 +4,7 @@ SuperMart App UI Prototype
 
 ![Demo](screenshots/home.png)
 
-**Figma:** [Prototype](https://www.figma.com/proto/f5ZnjWDpbzfOH4UfXHP1oV/Grocrey-App?node-id=1-1982&p=f&t=01hYUEO0dKWidO79-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=1%3A2490)
+**Figma:** [Prototype](https://www.figma.com/proto/f5ZnjWDpbzfOH4UfXHP1oV/Grocrey-App?node-id=1-2490&p=f&t=HWGWWSHrXhmYsPaL-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=1%3A2490)
 
 **React Live:** `npm run dev`
 
