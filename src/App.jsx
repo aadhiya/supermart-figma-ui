@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Home, Heart, Search, User, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react'
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
 import { supermarketData } from './data/supermarketData'
-
+import { motion } from 'framer-motion'
 const queryClient = new QueryClient()
 
 function App() {
@@ -23,7 +23,15 @@ function HomeScreen() {
         queryKey: ['products'],
         queryFn: () => Promise.resolve(supermarketData.featuredProducts)
     })
+    const [activeDemo, setActiveDemo] = useState(0)
 
+    const demos = [
+        'Static',
+        'Stagger Slide',
+        'Hover Glow',
+        'Drag Cart',
+        'Parallax Scroll'
+    ]
     return (
         <div className="pt-2 px-4 pb-28 space-y-6">
             {/* Search Bar */}
@@ -34,6 +42,31 @@ function HomeScreen() {
                     placeholder="Search groceries, fruits, vegetables..."
                 />
             </div>
+            {/* Demo Tabs */}
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {demos.map((demo, i) => (
+                    <motion.button
+                        key={i}
+                        className={`px-4 py-2 rounded-xl text-sm font-semibold flex-shrink-0 whitespace-nowrap ${i === activeDemo
+                                ? 'bg-emerald-500 text-white shadow-lg'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setActiveDemo(i)}
+                    >
+                        {demo}
+                    </motion.button>
+                ))}
+            </div>
+
+            {/* 5 MOTION DEMOS */}
+            {activeDemo === 0 && <DemoStatic products={products} />}
+            {activeDemo === 1 && <DemoStagger products={products} />}
+            {activeDemo === 2 && <DemoHoverGlow products={products} />}
+            {activeDemo === 3 && <DemoDragCart products={products} />}
+            {activeDemo === 4 && <DemoParallax products={products} />}
+
 
             {/* Figma Slider - EXACT file:60 */}
             <PromoSlider />
@@ -51,7 +84,7 @@ function HomeScreen() {
                     </button>
                 </div>
                 {/* FIXED: Remove -mx-1 px-1, increase gap */}
-                <div className="flex gap-6 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory">
+                <div className="flex gap-8 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory">
                     {products.map((product) => (
                         <div key={product.id} className="flex-none shrink-0 snap-center w-[160px]">
                             <FigmaProductCard product={product} />
@@ -62,6 +95,129 @@ function HomeScreen() {
 
 
         </div>
+    )
+}
+// 1. STATIC (Your current)
+function DemoStatic({ products }) {
+    return (
+        <section className="mb-8">
+            <div className="flex items-center justify-between mb-4 px-1">
+                <h2 className="text-xl font-bold text-gray-900">Static (Baseline)</h2>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory">
+                {products.map((product) => (
+                    <div key={product.id} className="flex-none shrink-0 snap-center w-[160px]">
+                        <FigmaProductCard product={product} />
+                    </div>
+                ))}
+            </div>
+        </section>
+    )
+}
+
+// 2. STAGGER SLIDE-IN
+function DemoStagger({ products }) {
+    return (
+        <section className="mb-8">
+            <div className="flex items-center justify-between mb-4 px-1">
+                <h2 className="text-xl font-bold text-gray-900">Stagger Slide</h2>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory">
+                {products.map((product, index) => (
+                    <motion.div
+                        key={product.id}
+                        className="flex-none shrink-0 snap-center w-[160px]"
+                        initial={{ opacity: 0, x: -50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1, duration: 0.6 }}
+                    >
+                        <FigmaProductCard product={product} />
+                    </motion.div>
+                ))}
+            </div>
+        </section>
+    )
+}
+
+// 3. HOVER GLOW + SCALE
+function DemoHoverGlow({ products }) {
+    return (
+        <section className="mb-8">
+            <div className="flex items-center justify-between mb-4 px-1">
+                <h2 className="text-xl font-bold text-gray-900">Hover Glow</h2>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory">
+                {products.map((product) => (
+                    <motion.div
+                        key={product.id}
+                        className="flex-none shrink-0 snap-center w-[160px]"
+                        whileHover={{
+                            scale: 1.05,
+                            y: -8,
+                            boxShadow: "0 25px 50px -12px rgba(16,185,129,0.4)"
+                        }}
+                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    >
+                        <FigmaProductCard product={product} />
+                    </motion.div>
+                ))}
+            </div>
+        </section>
+    )
+}
+
+// 4. DRAG-TO-CART (Simulated)
+function DemoDragCart({ products }) {
+    return (
+        <section className="mb-8">
+            <div className="flex items-center justify-between mb-4 px-1">
+                <h2 className="text-xl font-bold text-gray-900">Drag to Cart</h2>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory">
+                {products.map((product) => (
+                    <motion.div
+                        key={product.id}
+                        className="flex-none shrink-0 snap-center w-[160px]"
+                        drag
+                        dragElastic={0.2}
+                        dragConstraints={{ left: 0, right: 10, top: 0, bottom: 10 }}
+                        whileDrag={{ scale: 1.1, rotate: 5 }}
+                        whileHover={{ rotateY: 5 }}
+                    >
+                        <FigmaProductCard product={product} />
+                    </motion.div>
+                ))}
+            </div>
+        </section>
+    )
+}
+
+// 5. PARALLAX SCROLL REVEAL
+function DemoParallax({ products }) {
+    return (
+        <section className="mb-8 h-[400px] overflow-hidden relative">
+            <div className="flex items-center justify-between mb-4 px-1 sticky top-0 z-10 bg-white/90 backdrop-blur-sm">
+                <h2 className="text-xl font-bold text-gray-900">Parallax Scroll</h2>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory absolute inset-0">
+                {products.map((product, index) => (
+                    <motion.div
+                        key={product.id}
+                        className="flex-none shrink-0 snap-center w-[160px]"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                        style={{
+                            rotateX: index * 2,
+                            rotateY: index * 3
+                        }}
+                    >
+                        <FigmaProductCard product={product} />
+                    </motion.div>
+                ))}
+            </div>
+        </section>
     )
 }
 
